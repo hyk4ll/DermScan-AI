@@ -900,9 +900,9 @@ def load_custom_css():
 def load_trained_model():
     """Load the trained model, cached for performance."""
     if MODEL_PATH.exists():
-        return load_model(str(MODEL_PATH))
+        return load_model(str(MODEL_PATH), compile=False)
     if BACKUP_MODEL_PATH.exists():
-        return load_model(str(BACKUP_MODEL_PATH))
+        return load_model(str(BACKUP_MODEL_PATH), compile=False)
     return None
 
 
