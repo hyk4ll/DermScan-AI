@@ -1,26 +1,26 @@
-# Skin Disease Detection System - Dependencies
-# Python 3.8+ recommended
+# Skin Disease Detection System - Streamlit Community Cloud dependencies
+# Recommended cloud Python version: 3.11
 
 # Deep Learning
-tensorflow>=2.10.0
+tensorflow-cpu==2.15.1
 
 # Image Processing
-opencv-python-headless>=4.7.0
-Pillow>=9.0.0
+opencv-python-headless==4.9.0.80
+Pillow==10.4.0
 
 # Data Processing
-numpy>=1.23.0
-pandas>=1.5.0
+numpy==1.26.4
+pandas==2.2.2
 
 # Machine Learning Utilities
-scikit-learn>=1.2.0
+scikit-learn==1.5.1
 
 # Visualization
-matplotlib>=3.6.0
-seaborn>=0.12.0
+matplotlib==3.9.1
+seaborn==0.13.2
 
 # Web Interface
-streamlit>=1.28.0
+streamlit==1.37.1
 
 # Utilities
-glob2>=0.7
+glob2==0.7
