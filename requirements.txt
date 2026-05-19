@@ -2,25 +2,26 @@
 # Recommended cloud Python version: 3.11
 
 # Deep Learning
-tensorflow-cpu==2.15.1
+tensorflow==2.20.0
+keras==3.14.1
 
 # Image Processing
-opencv-python-headless==4.9.0.80
-Pillow==10.4.0
+opencv-python-headless==4.13.0.92
+Pillow==12.2.0
 
 # Data Processing
-numpy==1.26.4
-pandas==2.2.2
+numpy==2.4.4
+pandas==3.0.3
 
 # Machine Learning Utilities
-scikit-learn==1.5.1
+scikit-learn==1.8.0
 
 # Visualization
-matplotlib==3.9.1
+matplotlib==3.10.9
 seaborn==0.13.2
 
 # Web Interface
-streamlit==1.37.1
+streamlit==1.57.0
 
 # Utilities
 glob2==0.7
