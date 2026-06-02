@@ -338,6 +338,9 @@ def render_topbar():
                         <span class="ds-brand-subtitle">Medical Vision System</span>
                     </span>
                 </a>
+                <a class="ds-mobile-action" href="#demo" aria-label="Open scan section">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </a>
                 <div class="ds-links">
                     <a class="nav-link nav-home" href="#home">Home</a>
                     <a class="nav-link nav-system" href="#system">System</a>
@@ -348,6 +351,24 @@ def render_topbar():
                 <a class="ds-cta" href="#demo">Get Started</a>
             </nav>
         </header>
+        <nav class="ds-mobile-bottom-nav" aria-label="Primary mobile navigation">
+            <a class="mobile-nav-link nav-home" href="#home">
+                <span class="material-symbols-outlined">home</span>
+                <span>Home</span>
+            </a>
+            <a class="mobile-nav-link nav-demo" href="#demo">
+                <span class="material-symbols-outlined">photo_camera</span>
+                <span>Scan</span>
+            </a>
+            <a class="mobile-nav-link nav-results" href="#results">
+                <span class="material-symbols-outlined">analytics</span>
+                <span>Results</span>
+            </a>
+            <a class="mobile-nav-link nav-library" href="#library">
+                <span class="material-symbols-outlined">menu_book</span>
+                <span>Library</span>
+            </a>
+        </nav>
         """,
         unsafe_allow_html=True,
     )
@@ -407,6 +428,28 @@ def render_home():
                     <div class="icon-box secondary">speed</div>
                     <h3>Real-time</h3>
                     <p>Inference latency under 150ms for instantaneous feedback.</p>
+                </div>
+            </div>
+            <div class="mobile-metric-grid">
+                <div class="mobile-metric-card">
+                    <span class="material-symbols-outlined mobile-metric-icon">category</span>
+                    <strong>8</strong>
+                    <span>Conditions</span>
+                </div>
+                <div class="mobile-metric-card">
+                    <span class="material-symbols-outlined mobile-metric-icon">neurology</span>
+                    <strong>CNN</strong>
+                    <span>Model</span>
+                </div>
+                <div class="mobile-metric-card">
+                    <span class="material-symbols-outlined mobile-metric-icon">photo_size_select_small</span>
+                    <strong>28x28</strong>
+                    <span>Input</span>
+                </div>
+                <div class="mobile-metric-card">
+                    <span class="material-symbols-outlined mobile-metric-icon">speed</span>
+                    <strong>Real-time</strong>
+                    <span>Analysis</span>
                 </div>
             </div>
         </section>
