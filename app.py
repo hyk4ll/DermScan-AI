@@ -234,6 +234,49 @@ def jump_to_anchor(anchor_id):
     )
 
 
+def nudge_scan_video_playback():
+    components.html(
+        """
+        <script>
+        (function () {
+            function tryPlay() {
+                const video = window.parent.document.getElementById("scan-video");
+                if (!video) {
+                    return false;
+                }
+
+                video.muted = true;
+                video.loop = true;
+                video.playsInline = true;
+                video.setAttribute("playsinline", "playsinline");
+                video.setAttribute("webkit-playsinline", "webkit-playsinline");
+
+                const playPromise = video.play();
+                if (playPromise && typeof playPromise.catch === "function") {
+                    playPromise.catch(function () {});
+                }
+                return true;
+            }
+
+            if (tryPlay()) {
+                return;
+            }
+
+            let attempts = 0;
+            const timer = window.setInterval(function () {
+                attempts += 1;
+                if (tryPlay() || attempts > 20) {
+                    window.clearInterval(timer);
+                }
+            }, 250);
+        })();
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
+
+
 def condition_info(condition):
     return DISEASE_INFO.get(
         condition,
@@ -313,9 +356,11 @@ def render_topbar():
 def render_home():
     scan_video_uri = file_to_data_uri(SCAN_VIDEO_PATH)
     scan_media_markup = (
-        f'<video class="scan-media" src="{scan_video_uri}" type="video/mp4" '
-        f'autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline" '
-        f'webkit-playsinline="webkit-playsinline" preload="auto"></video>'
+        f'<video id="scan-video" class="scan-media" autoplay="autoplay" muted="muted" '
+        f'loop="loop" playsinline="playsinline" webkit-playsinline="webkit-playsinline" '
+        f'preload="metadata" controls="controls" controlsList="nodownload noplaybackrate">'
+        f'<source src="{scan_video_uri}" type="video/mp4">'
+        f'</video>'
         if scan_video_uri
         else f'<img class="scan-media" src="{HERO_IMAGE}" alt="Skin scan visualization">'
     )
@@ -367,6 +412,8 @@ def render_home():
         </section>
         """
     )
+    if scan_video_uri:
+        nudge_scan_video_playback()
 
 
 def render_system():
