@@ -19,6 +19,24 @@
     --gutter: 24px;
 }
 
+/* Dark theme overrides. Toggle by setting `data-theme="dark"` on the <html> element. */
+[data-theme="dark"] {
+    --surface: #071827;
+    --surface-low: #061221;
+    --surface-container: #0b1726;
+    --surface-high: #0f2738;
+    --background: #071423;
+    --text-primary: #e6eef8;
+    --text-secondary: #94a3b8;
+    --border: rgba(255,255,255,0.06);
+    --primary: #4f8cff;
+    --primary-container: #143a66;
+    --secondary: #17b7a0;
+    --success: #16a34a;
+    --warning: #f59e0b;
+    --error: #f97316;
+}
+
 html {
     scroll-behavior: smooth;
 }
@@ -143,6 +161,37 @@ div[data-testid="stHorizontalBlock"] {
     gap: 34px;
 }
 
+/* container for right-side actions (Get Started + theme toggle) */
+.ds-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Theme toggle button (topbar) */
+.ds-theme-toggle {
+    width: 44px;
+    height: 36px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(15,23,42,0.06);
+    transition: transform 160ms ease, background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.ds-theme-toggle:hover { transform: translateY(-2px); }
+
+.ds-theme-toggle.active {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: rgba(0,0,0,0.06);
+    box-shadow: 0 10px 24px rgba(15,23,42,0.12);
+}
+
 .ds-links a {
     color: #435571;
     font-size: 15px;
@@ -180,6 +229,13 @@ body:has(#library:target) .nav-library {
     font-weight: 700;
     text-decoration: none !important;
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.16);
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease,
+        background-color 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
+    will-change: transform;
 }
 
 .ds-cta:hover,
@@ -198,13 +254,13 @@ body:has(#library:target) .nav-library {
 }
 
 .ds-page {
-    padding-top: 80px;
+    padding-top: 60px;
 }
 
 .ds-section {
     max-width: var(--container-max);
     margin: 0 auto;
-    padding: 72px 40px;
+    padding: 56px 40px;
     scroll-margin-top: 96px;
 }
 
@@ -226,7 +282,7 @@ body:has(#library:target) .nav-library {
 .ds-title {
     margin: 0;
     color: var(--text-primary);
-    font-size: 48px;
+    font-size: 58px;
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: 0;
@@ -284,6 +340,13 @@ body:has(#library:target) .nav-library {
     border-radius: 10px;
     font-weight: 700;
     text-decoration: none !important;
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease,
+        background-color 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
+    will-change: transform;
 }
 
 .primary-action {
@@ -311,6 +374,11 @@ body:has(#library:target) .nav-library {
     border: 1px solid var(--border);
     background: rgba(255, 255, 255, 0.72);
     box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+    transition:
+        transform 200ms ease,
+        box-shadow 200ms ease,
+        border-color 200ms ease;
+    will-change: transform;
 }
 
 .scan-card img,
@@ -394,11 +462,65 @@ body:has(#library:target) .nav-library {
     border-radius: 12px;
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
     backdrop-filter: blur(14px);
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease,
+        border-color 180ms ease,
+        background-color 180ms ease;
+    will-change: transform;
 }
 
 .metric-card {
     padding: 24px;
     min-height: 178px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .ds-cta:hover,
+    .primary-action:hover,
+    .secondary-action:hover,
+    .metric-card:hover,
+    .library-card:hover,
+    .result-card:hover,
+    .scan-card:hover,
+    .stButton > button:hover,
+    .stDownloadButton > button:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+    }
+
+    .primary-action:hover {
+        background: #1d4ed8;
+    }
+
+    .secondary-action:hover {
+        border-color: var(--primary);
+        color: var(--primary) !important;
+        background: rgba(37, 99, 235, 0.06);
+    }
+
+    .ds-cta:hover {
+        background: #1d4ed8;
+    }
+
+    .metric-card:hover,
+    .library-card:hover,
+    .result-card:hover,
+    .scan-card:hover {
+        border-color: rgba(37, 99, 235, 0.22);
+    }
+}
+
+.ds-cta:active,
+.primary-action:active,
+.secondary-action:active,
+.metric-card:active,
+.library-card:active,
+.result-card:active,
+.scan-card:active,
+.stButton > button:active,
+.stDownloadButton > button:active {
+    transform: translateY(-1px) scale(0.995);
 }
 
 .icon-box {
@@ -849,11 +971,24 @@ h3.status-heading,
     font-size: 18px;
     font-weight: 700;
     border: 1px solid var(--primary) !important;
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease,
+        background-color 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
+    will-change: transform;
 }
 
 .stButton > button[kind="primary"] {
     color: #ffffff;
     background: var(--primary-container);
+}
+
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
 }
 
 .preprocess-strip {
@@ -1447,7 +1582,7 @@ h3.status-heading,
     }
 
     .ds-title {
-        font-size: 38px;
+        font-size: 48px;
     }
 
     .ds-footer {
@@ -1458,5 +1593,13 @@ h3.status-heading,
     .footer-links,
     .severity-note {
         justify-content: flex-start;
+    }
+
+    .ds-cta,
+    .primary-action,
+    .secondary-action,
+    .stButton > button,
+    .stDownloadButton > button {
+        transition: none;
     }
 }
