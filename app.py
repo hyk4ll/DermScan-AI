@@ -102,6 +102,21 @@ def inject_css():
         st.markdown(f"<style>{STYLE_PATH.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
 
 
+def apply_theme(theme: str = "light"):
+    # Set a data-theme attribute on the top-level document element so CSS variables switch.
+    components.html(
+        f"""
+        <script>
+        try {{
+            document.documentElement.setAttribute('data-theme', '{theme}');
+        }} catch (e) {{}}
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
+
+
 def esc(value):
     return html.escape(str(value), quote=True)
 
@@ -206,6 +221,7 @@ def init_state():
     st.session_state.setdefault("latest_time", "Oct 24, 2024 at 14:32 PST")
     st.session_state.setdefault("jump_to_results", False)
     st.session_state.setdefault("history", [])
+    st.session_state.setdefault("theme", "light")
 
 
 def jump_to_anchor(anchor_id):
@@ -348,7 +364,10 @@ def render_topbar():
                     <a class="nav-link nav-results" href="#results">Results</a>
                     <a class="nav-link nav-library" href="#library">Library</a>
                 </div>
-                <a class="ds-cta" href="#demo">Get Started</a>
+                <div class="ds-actions">
+                    <a class="ds-cta" href="#demo">Get Started</a>
+                    <button id="ds-theme-toggle" class="ds-theme-toggle" aria-label="Toggle theme">🌙</button>
+                </div>
             </nav>
         </header>
         <nav class="ds-mobile-bottom-nav" aria-label="Primary mobile navigation">
@@ -371,6 +390,42 @@ def render_topbar():
         </nav>
         """,
         unsafe_allow_html=True,
+    )
+    # Inject client-side script to wire the theme toggle and persist choice to localStorage
+    components.html(
+        """
+        <script>
+        (function(){
+            try{
+                const parentDoc = window.parent.document;
+                function setTheme(t){
+                    parentDoc.documentElement.setAttribute('data-theme', t);
+                    localStorage.setItem('dermscan-theme', t);
+                    const btn = parentDoc.getElementById('ds-theme-toggle');
+                    if(btn){
+                        btn.classList.toggle('active', t === 'dark');
+                        btn.textContent = t === 'dark' ? '☀' : '🌙';
+                    }
+                }
+
+                const init = localStorage.getItem('dermscan-theme') || 'light';
+                setTheme(init);
+
+                const toggle = parentDoc.getElementById('ds-theme-toggle');
+                if(toggle && !toggle._ds_init){
+                    toggle._ds_init = true;
+                    toggle.addEventListener('click', function(){
+                        const current = localStorage.getItem('dermscan-theme') === 'dark' ? 'dark' : 'light';
+                        const next = current === 'dark' ? 'light' : 'dark';
+                        setTheme(next);
+                    });
+                }
+            }catch(e){}
+        })();
+        </script>
+        """,
+        height=0,
+        width=0,
     )
 
 
@@ -542,7 +597,7 @@ def render_demo(model, model_path, model_error, class_indices):
         """
         <section id="demo" class="ds-section demo-intro-section">
             <div class="section-header">
-                <h2 class="ds-title" style="font-size: 40px;">Prediction Demo</h2>
+                <h2 class="ds-title" style="font-size: 50px;">Prediction Demo</h2>
                 <p class="ds-subtitle">
                     Upload a high-resolution image of a skin lesion for immediate CNN-powered diagnostic analysis.
                     Our system performs multi-layered scanning for precise classification.
@@ -704,7 +759,7 @@ def render_results():
             """
             <section id="results" class="ds-section">
                 <div class="section-header">
-                    <h2 class="ds-title" style="font-size: 36px;">Prediction Results</h2>
+                    <h2 class="ds-title" style="font-size: 46px;">Prediction Results</h2>
                     <p class="ds-copy">No analysis completed yet.</p>
                 </div>
                 <div class="result-card no-results-card">
@@ -732,7 +787,7 @@ def render_results():
         f"""
         <section id="results" class="ds-section">
             <div class="section-header">
-                <h2 class="ds-title" style="font-size: 36px;">Prediction Results</h2>
+                <h2 class="ds-title" style="font-size: 46px;">Prediction Results</h2>
                 <p class="ds-copy">Analysis completed: {esc(st.session_state.latest_time)}</p>
             </div>
             <div class="results-grid">
@@ -812,7 +867,7 @@ def render_library():
         """
         <section id="library" class="ds-section">
             <div class="section-header">
-                <h2 class="ds-title" style="font-size: 48px;">Detectable Skin Conditions</h2>
+                <h2 class="ds-title" style="font-size: 58px;">Detectable Skin Conditions</h2>
                 <p class="ds-subtitle" style="margin-top: 12px;">The dashboard supports eight classes — seven lesion types plus healthy skin — and presents them as compact clinical summary cards.</p>
             </div>
         </section>
@@ -889,6 +944,16 @@ def render_footer():
 def main():
     inject_css()
     init_state()
+    # Apply currently selected theme and render a compact toggle control
+    apply_theme(st.session_state.get("theme", "light"))
+    cols = st.columns([1, 0.08])
+    with cols[1]:
+        prefer_dark = st.session_state.get("theme", "light") == "dark"
+        toggled = st.checkbox("🌙", value=prefer_dark, key="theme_toggle", help="Toggle dark mode")
+        new_theme = "dark" if toggled else "light"
+        if st.session_state.get("theme") != new_theme:
+            st.session_state["theme"] = new_theme
+            apply_theme(new_theme)
 
     class_indices = load_class_indices()
     model, model_path, model_error = get_model()
