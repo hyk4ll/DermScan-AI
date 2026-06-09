@@ -354,9 +354,6 @@ def render_topbar():
                         <span class="ds-brand-subtitle">Medical Vision System</span>
                     </span>
                 </a>
-                <a class="ds-mobile-action" href="#demo" aria-label="Open scan section">
-                    <span class="material-symbols-outlined">account_circle</span>
-                </a>
                 <div class="ds-links">
                     <a class="nav-link nav-home" href="#home">Home</a>
                     <a class="nav-link nav-system" href="#system">System</a>
@@ -365,6 +362,9 @@ def render_topbar():
                     <a class="nav-link nav-library" href="#library">Library</a>
                 </div>
                 <div class="ds-actions">
+                    <a class="ds-mobile-action" href="#demo" aria-label="Open scan section">
+                        <span class="material-symbols-outlined">account_circle</span>
+                    </a>
                     <a class="ds-cta" href="#demo">Get Started</a>
                     <button id="ds-theme-toggle" class="ds-theme-toggle" aria-label="Toggle theme">🌙</button>
                 </div>
@@ -593,6 +593,19 @@ def render_system():
 
 
 def render_demo(model, model_path, model_error, class_indices):
+    demo_light_bg = file_to_data_uri(ASSETS_DIR / "White Background.png")
+    demo_dark_bg = file_to_data_uri(ASSETS_DIR / "Dark Background.png")
+    st.markdown(
+        f"""
+        <style>
+        :root {{
+            --demo-bg-light: url("{demo_light_bg}");
+            --demo-bg-dark: url("{demo_dark_bg}");
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
     st.markdown(
         """
         <section id="demo" class="ds-section demo-intro-section">
@@ -608,95 +621,115 @@ def render_demo(model, model_path, model_error, class_indices):
         unsafe_allow_html=True,
     )
 
-    left, right = st.columns([0.58, 0.42], gap="large")
-
     image_np = None
-    with left:
-        with st.container(border=False, key="demo_upload_card"):
-            st.markdown(
-                """
-                <div class="card-title-row">
-                    <span class="material-symbols-outlined">upload_file</span>
-                    <h3>Upload Skin Lesion Image</h3>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-            upload_box = st.empty()
-            uploaded = st.file_uploader(
-                "Drag and drop lesion image here",
-                type=["jpg", "jpeg", "png", "webp"],
-                accept_multiple_files=False,
-                label_visibility="collapsed",
-            )
+    mobile_run_prediction = False
+    desktop_run_prediction = False
+    with st.container(border=False, key="demo_stage"):
+        left, right = st.columns([0.58, 0.42], gap="large")
+
+        with left:
+            with st.container(border=False, key="demo_upload_card"):
+                st.markdown(
+                    """
+                    <div class="card-title-row">
+                        <span class="material-symbols-outlined">upload_file</span>
+                        <h3>Upload Skin Lesion Image</h3>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                upload_box = st.empty()
+                uploaded = st.file_uploader(
+                    "Drag and drop lesion image here",
+                    type=["jpg", "jpeg", "png", "webp"],
+                    accept_multiple_files=False,
+                    label_visibility="collapsed",
+                )
+
+                if uploaded is not None:
+                    image = Image.open(uploaded).convert("RGB")
+                    image_np = np.array(image)
+                    upload_box.markdown(
+                        f"""
+                        <div class="upload-shell upload-shell-preview">
+                            <img class="upload-preview-image" src="{pil_to_data_uri(image)}" alt="Selected lesion image">
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    upload_box.markdown(
+                        """
+                        <div class="upload-shell">
+                            <div class="upload-placeholder">
+                                <span class="material-symbols-outlined">add_a_photo</span>
+                                <p>Drag and drop lesion image here</p>
+                                <small>Maximum file size: 200MB</small>
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
 
             if uploaded is not None:
-                image = Image.open(uploaded).convert("RGB")
-                image_np = np.array(image)
-                upload_box.markdown(
+                with st.container(border=False, key="demo_mobile_run"):
+                    mobile_run_prediction = st.button(
+                        "Run Prediction",
+                        type="primary",
+                        use_container_width=True,
+                        disabled=model is None,
+                        key="mobile_run_prediction",
+                    )
+
+        model_status = "Model Loaded" if model is not None else "Model Missing"
+        model_version = model_path.name if model_path else "No model"
+        model_class = "success" if model is not None else "neutral"
+        with right:
+            with st.container(border=False, key="status_card"):
+                st.markdown(
                     f"""
-                    <div class="upload-shell upload-shell-preview">
-                        <img class="upload-preview-image" src="{pil_to_data_uri(image)}" alt="Selected lesion image">
+                    <h3 class="status-heading">System Status</h3>
+                    <div class="status-row {model_class}">
+                        <span><span class="material-symbols-outlined">check_circle</span> <strong>{esc(model_status)}</strong></span>
+                        <span>{esc(model_version)}</span>
+                    </div>
+                    <div class="status-row neutral">
+                        <span><span class="material-symbols-outlined">info</span> <strong>Supported Input</strong></span>
+                        <span>JPG, PNG, WEBP</span>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
-            else:
-                upload_box.markdown(
+
+            with st.container(border=False, key="execution_card"):
+                st.markdown(
                     """
-                    <div class="upload-shell">
-                        <div class="upload-placeholder">
-                            <span class="material-symbols-outlined">add_a_photo</span>
-                            <p>Drag and drop lesion image here</p>
-                            <small>Maximum file size: 200MB</small>
-                        </div>
-                    </div>
+                    <h3 class="status-heading">Execution</h3>
+                    <p class="ds-copy">
+                        Once an image is uploaded, the existing preprocessing module removes hair artifacts,
+                        normalizes the image to 28x28 RGB input, and sends it to the trained CNN model.
+                    </p>
                     """,
                     unsafe_allow_html=True,
                 )
 
-    model_status = "Model Loaded" if model is not None else "Model Missing"
-    model_version = model_path.name if model_path else "No model"
-    model_class = "success" if model is not None else "neutral"
-    with right:
-        with st.container(border=False, key="status_card"):
-            st.markdown(
-                f"""
-                <h3 class="status-heading">System Status</h3>
-                <div class="status-row {model_class}">
-                    <span><span class="material-symbols-outlined">check_circle</span> <strong>{esc(model_status)}</strong></span>
-                    <span>{esc(model_version)}</span>
-                </div>
-                <div class="status-row neutral">
-                    <span><span class="material-symbols-outlined">info</span> <strong>Supported Input</strong></span>
-                    <span>JPG, PNG, WEBP</span>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+                if model_error:
+                    st.error(model_error)
 
-        with st.container(border=False, key="execution_card"):
-            st.markdown(
-                """
-                <h3 class="status-heading">Execution</h3>
-                <p class="ds-copy">
-                    Once an image is uploaded, the existing preprocessing module removes hair artifacts,
-                    normalizes the image to 28x28 RGB input, and sends it to the trained CNN model.
-                </p>
-                """,
-                unsafe_allow_html=True,
-            )
+                disabled = image_np is None or model is None
+                desktop_run_prediction = st.button(
+                    "Run Prediction",
+                    type="primary",
+                    use_container_width=True,
+                    disabled=disabled,
+                    key="desktop_run_prediction",
+                )
+                st.markdown(
+                    '<p class="ds-copy" style="text-align:center;margin-top:16px;">Estimated processing time: &lt; 2.4s</p>',
+                    unsafe_allow_html=True,
+                )
 
-            if model_error:
-                st.error(model_error)
-
-            disabled = image_np is None or model is None
-            run_prediction = st.button("Run Prediction", type="primary", use_container_width=True, disabled=disabled)
-            st.markdown(
-                '<p class="ds-copy" style="text-align:center;margin-top:16px;">Estimated processing time: &lt; 2.4s</p>',
-                unsafe_allow_html=True,
-            )
-
+    run_prediction = mobile_run_prediction or desktop_run_prediction
     if run_prediction and image_np is not None and model is not None:
         with st.spinner("Running hair removal, preprocessing, and CNN inference..."):
             cleaned = hair_removal(image_np)
