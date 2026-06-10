@@ -1259,11 +1259,21 @@ h3.status-heading,
     margin-top: 18px;
 }
 
+.preprocess-detail-item {
+    position: relative;
+}
+
 .preprocess-img {
+    position: relative;
     overflow: hidden;
     border-radius: 10px;
     border: 1px solid var(--border);
     background: var(--surface-low);
+}
+
+.preprocess-clickable {
+    display: block;
+    cursor: zoom-in;
 }
 
 .preprocess-img img {
@@ -1271,6 +1281,139 @@ h3.status-heading,
     aspect-ratio: 1;
     object-fit: cover;
     display: block;
+    transition: transform 180ms ease, filter 180ms ease;
+}
+
+.preprocess-clickable:hover img {
+    transform: scale(1.035);
+    filter: saturate(1.04);
+}
+
+.preprocess-zoom-cue {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    color: #ffffff;
+    background: rgba(0, 74, 198, 0.86);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.22);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.preprocess-clickable:hover .preprocess-zoom-cue,
+.preprocess-clickable:active .preprocess-zoom-cue {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.preprocess-zoom-cue .material-symbols-outlined {
+    font-size: 19px;
+}
+
+.preprocess-view-toggle {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.preprocess-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: none;
+    place-items: center;
+    padding: 28px;
+}
+
+.preprocess-view-toggle:checked ~ .preprocess-lightbox {
+    display: grid;
+}
+
+#results:has(.preprocess-view-toggle:checked),
+.results-grid:has(.preprocess-view-toggle:checked),
+.results-left:has(.preprocess-view-toggle:checked),
+.preprocess-card:has(.preprocess-view-toggle:checked) {
+    position: relative;
+    z-index: 13000;
+}
+
+.preprocess-card:has(.preprocess-view-toggle:checked) {
+    transform: none !important;
+    will-change: auto;
+}
+
+.preprocess-card,
+.preprocess-card:hover,
+.preprocess-card:active {
+    transform: none !important;
+    will-change: auto;
+}
+
+.preprocess-lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    cursor: zoom-out;
+    background: rgba(4, 12, 24, 0.78);
+    backdrop-filter: blur(12px);
+}
+
+.preprocess-lightbox-panel {
+    position: relative;
+    z-index: 1;
+    width: min(920px, 94vw);
+    max-height: min(84vh, 780px);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+    border-radius: 18px;
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.34);
+}
+
+.preprocess-lightbox-head {
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 18px 14px 22px;
+    color: var(--text-primary);
+    font: 800 15px/20px "Geist", sans-serif;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+}
+
+.preprocess-lightbox-close {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--text-primary);
+    background: var(--surface-low);
+    border: 1px solid var(--border);
+}
+
+.preprocess-lightbox-close .material-symbols-outlined {
+    font-size: 22px;
+}
+
+.preprocess-lightbox-panel > img {
+    width: 100%;
+    height: 100%;
+    max-height: calc(84vh - 58px);
+    object-fit: contain;
+    display: block;
+    background: #000;
 }
 
 .img-caption {
