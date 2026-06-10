@@ -825,16 +825,48 @@ def render_results():
             </div>
             <div class="results-grid">
                 <div class="results-left">
-                    <div class="result-card">
+                    <div class="result-card preprocess-card">
                         <h3>Image Preprocessing</h3>
                         <div class="preprocess-strip">
-                            <div>
-                                <div class="preprocess-img"><img src="{st.session_state.latest_original_uri}" alt="Original lesion image"></div>
+                            <div class="preprocess-detail-item">
+                                <input class="preprocess-view-toggle" type="checkbox" id="view-original-image">
+                                <label class="preprocess-img preprocess-clickable" for="view-original-image" aria-label="View original image details">
+                                    <img src="{st.session_state.latest_original_uri}" alt="Original lesion image">
+                                    <span class="preprocess-zoom-cue"><span class="material-symbols-outlined">open_in_full</span></span>
+                                </label>
                                 <div class="img-caption">Original Image</div>
+                                <div class="preprocess-lightbox" aria-label="Original image detail view">
+                                    <label class="preprocess-lightbox-backdrop" for="view-original-image"></label>
+                                    <div class="preprocess-lightbox-panel">
+                                        <div class="preprocess-lightbox-head">
+                                            <span>Original Image</span>
+                                            <label class="preprocess-lightbox-close" for="view-original-image" aria-label="Close original image detail">
+                                                <span class="material-symbols-outlined">close</span>
+                                            </label>
+                                        </div>
+                                        <img src="{st.session_state.latest_original_uri}" alt="Original lesion image enlarged">
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="preprocess-img"><img src="{st.session_state.latest_processed_uri}" alt="Preprocessed lesion image"></div>
+                            <div class="preprocess-detail-item">
+                                <input class="preprocess-view-toggle" type="checkbox" id="view-preprocessed-image">
+                                <label class="preprocess-img preprocess-clickable" for="view-preprocessed-image" aria-label="View preprocessed image details">
+                                    <img src="{st.session_state.latest_processed_uri}" alt="Preprocessed lesion image">
+                                    <span class="preprocess-zoom-cue"><span class="material-symbols-outlined">open_in_full</span></span>
+                                </label>
                                 <div class="img-caption" style="color: var(--primary);">Preprocessed</div>
+                                <div class="preprocess-lightbox" aria-label="Preprocessed image detail view">
+                                    <label class="preprocess-lightbox-backdrop" for="view-preprocessed-image"></label>
+                                    <div class="preprocess-lightbox-panel">
+                                        <div class="preprocess-lightbox-head">
+                                            <span>Preprocessed</span>
+                                            <label class="preprocess-lightbox-close" for="view-preprocessed-image" aria-label="Close preprocessed image detail">
+                                                <span class="material-symbols-outlined">close</span>
+                                            </label>
+                                        </div>
+                                        <img src="{st.session_state.latest_processed_uri}" alt="Preprocessed lesion image enlarged">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
